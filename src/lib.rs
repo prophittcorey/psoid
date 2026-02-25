@@ -4,12 +4,6 @@
 //! based on their name. The Section ID determines which guild the character
 //! belongs to, which affects drop rates and MAG types.
 //!
-//! # Game Versions
-//!
-//! This library supports multiple game versions:
-//! - **V1V2**: Original PSO versions 1 and 2 (uses ASCII values directly)
-//! - **BlueBurst**: PSO BlueBurst version (uses custom character mappings and class offsets)
-//!
 //! # Examples
 //!
 //! ```
@@ -19,7 +13,7 @@
 //! let guild = calculate("foobar", GameVersion::V1, None).unwrap();
 //! assert_eq!(guild.name(), "Bluefull");
 //!
-//! // BlueBurst calculation with class
+//! // Blue Burst calculation with class
 //! let guild = calculate("PSO Lover", GameVersion::BlueBurst, Some(CharacterClass::RAmar)).unwrap();
 //! assert_eq!(guild.name(), "Skyly");
 //! ```
@@ -29,11 +23,8 @@ use std::fmt;
 /// Represents the game version which affects Section ID calculation
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum GameVersion {
-    /// Version 1
     V1,
-    /// Version 2
     V2,
-    /// BlueBurst
     BlueBurst,
 }
 
@@ -55,7 +46,6 @@ pub enum CharacterClass {
 }
 
 impl CharacterClass {
-    /// Get the class offset value for BlueBurst calculations
     fn blueburst_offset(&self) -> u32 {
         match self {
             CharacterClass::HUmar => 5,
@@ -498,7 +488,6 @@ pub fn calculate(
     version: GameVersion,
     class: Option<CharacterClass>,
 ) -> Result<Guild, String> {
-    // Validate name
     if name.is_empty() {
         return Err("Name cannot be empty".to_string());
     }
@@ -506,28 +495,31 @@ pub fn calculate(
         return Err("Name must be at most 12 characters long".to_string());
     }
 
-    // Calculate section ID based on version
     let id = match version {
         GameVersion::V1 | GameVersion::V2 => {
             if !name.is_ascii() {
                 return Err("Name must contain only ASCII characters".to_string());
             }
+
             let sum: u32 = name.bytes().map(|b| b as u32).sum();
+
             sum % 10
         }
         GameVersion::BlueBurst => {
             let mut sum: u32 = 0;
+
             for ch in name.chars() {
                 sum += get_blueburst_char_value(ch)?;
             }
+
             if let Some(class_obj) = class {
                 sum += class_obj.blueburst_offset();
             }
+
             sum % 10
         }
     };
 
-    // Convert ID to Guild
     Ok(match id {
         0 => Guild::Viridia,
         1 => Guild::Greennill,
