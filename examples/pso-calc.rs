@@ -16,8 +16,8 @@ fn main() {
         eprintln!();
         eprintln!("Examples:");
         eprintln!("  {} foobar", args[0]);
-        eprintln!("  {} \"PSO Lover\" v1", args[0]);
-        eprintln!("  {} \"PSO Lover\" blueburst RAmar", args[0]);
+        eprintln!("  {} \"PSO Player\" v1", args[0]);
+        eprintln!("  {} \"PSO Player\" blueburst RAmar", args[0]);
         std::process::exit(1);
     }
 
@@ -25,7 +25,6 @@ fn main() {
     let version_str = args.get(2).map(|s| s.as_str()).unwrap_or("v1v2");
     let class_str = args.get(3).map(|s| s.as_str());
 
-    // Parse version
     let version = match version_str.to_lowercase().as_str() {
         "v1" | "1" => GameVersion::V1,
         "v2" | "2" => GameVersion::V2,
@@ -74,8 +73,8 @@ fn main() {
             println!("{}", guild);
             println!();
 
-            // Get drop rates directly
             let rates = guild.drop_rates();
+
             println!("Detailed Drop Rates:");
             println!("  Sabers      : {}%", rates.sabers);
             println!("  Swords      : {}%", rates.swords);
