@@ -539,143 +539,160 @@ pub fn calculate(
 mod tests {
     use super::*;
 
-    // V1 Tests
+    // V1/V2 Tests (both versions use identical algorithms)
     #[test]
-    fn test_v1_testing() {
-        let guild = calculate("Testing", GameVersion::V1, None).unwrap();
-        assert_eq!(guild.id(), 4);
-        assert_eq!(guild.name(), "Purplenum");
+    fn test_testing() {
+        for version in [GameVersion::V1, GameVersion::V2] {
+            let guild = calculate("Testing", version, None).unwrap();
+            assert_eq!(guild.id(), 4);
+            assert_eq!(guild.name(), "Purplenum");
+        }
     }
 
     #[test]
-    fn test_v1_test() {
-        let guild = calculate("Test", GameVersion::V1, None).unwrap();
-        assert_eq!(guild.id(), 6);
-        assert_eq!(guild.name(), "Redria");
+    fn test_test() {
+        for version in [GameVersion::V1, GameVersion::V2] {
+            let guild = calculate("Test", version, None).unwrap();
+            assert_eq!(guild.id(), 6);
+            assert_eq!(guild.name(), "Redria");
+        }
     }
 
     #[test]
-    fn test_v1_bob() {
-        let guild = calculate("Bob", GameVersion::V1, None).unwrap();
-        assert_eq!(guild.id(), 5);
-        assert_eq!(guild.name(), "Pinkal");
+    fn test_bob() {
+        for version in [GameVersion::V1, GameVersion::V2] {
+            let guild = calculate("Bob", version, None).unwrap();
+            assert_eq!(guild.id(), 5);
+            assert_eq!(guild.name(), "Pinkal");
+        }
     }
 
     #[test]
-    fn test_v1_big_guns() {
-        let guild = calculate("Big Guns", GameVersion::V1, None).unwrap();
-        assert_eq!(guild.id(), 9);
-        assert_eq!(guild.name(), "Whitill");
+    fn test_big_guns() {
+        for version in [GameVersion::V1, GameVersion::V2] {
+            let guild = calculate("Big Guns", version, None).unwrap();
+            assert_eq!(guild.id(), 9);
+            assert_eq!(guild.name(), "Whitill");
+        }
     }
 
     #[test]
-    fn test_v1_pso_fan() {
-        let guild = calculate("PSO Fan", GameVersion::V1, None).unwrap();
-        assert_eq!(guild.id(), 1);
-        assert_eq!(guild.name(), "Greennill");
+    fn test_pso_fan() {
+        for version in [GameVersion::V1, GameVersion::V2] {
+            let guild = calculate("PSO Fan", version, None).unwrap();
+            assert_eq!(guild.id(), 1);
+            assert_eq!(guild.name(), "Greennill");
+        }
     }
 
     #[test]
-    fn test_v1_hunter() {
-        let guild = calculate("Hunter", GameVersion::V1, None).unwrap();
-        assert_eq!(guild.id(), 0);
-        assert_eq!(guild.name(), "Viridia");
-    }
-
-    // V2 Tests
-    #[test]
-    fn test_v2_testing() {
-        let guild = calculate("Testing", GameVersion::V2, None).unwrap();
-        assert_eq!(guild.id(), 4);
-        assert_eq!(guild.name(), "Purplenum");
+    fn test_hunter() {
+        for version in [GameVersion::V1, GameVersion::V2] {
+            let guild = calculate("Hunter", version, None).unwrap();
+            assert_eq!(guild.id(), 0);
+            assert_eq!(guild.name(), "Viridia");
+        }
     }
 
     #[test]
-    fn test_v2_test() {
-        let guild = calculate("Test", GameVersion::V2, None).unwrap();
-        assert_eq!(guild.id(), 6);
-        assert_eq!(guild.name(), "Redria");
+    fn test_corey() {
+        for version in [GameVersion::V1, GameVersion::V2] {
+            let guild = calculate("Corey", version, None).unwrap();
+            assert_eq!(guild.id(), 4);
+            assert_eq!(guild.name(), "Purplenum");
+        }
     }
 
     #[test]
-    fn test_v2_bob() {
-        let guild = calculate("Bob", GameVersion::V2, None).unwrap();
-        assert_eq!(guild.id(), 5);
-        assert_eq!(guild.name(), "Pinkal");
+    fn test_troll() {
+        for version in [GameVersion::V1, GameVersion::V2] {
+            let guild = calculate("Troll", version, None).unwrap();
+            assert_eq!(guild.id(), 5);
+            assert_eq!(guild.name(), "Pinkal");
+        }
     }
 
     #[test]
-    fn test_v2_big_guns() {
-        let guild = calculate("Big Guns", GameVersion::V2, None).unwrap();
-        assert_eq!(guild.id(), 9);
-        assert_eq!(guild.name(), "Whitill");
+    fn test_enemy() {
+        for version in [GameVersion::V1, GameVersion::V2] {
+            let guild = calculate("Enemy", version, None).unwrap();
+            assert_eq!(guild.id(), 0);
+            assert_eq!(guild.name(), "Viridia");
+        }
     }
 
     #[test]
-    fn test_v2_pso_fan() {
-        let guild = calculate("PSO Fan", GameVersion::V2, None).unwrap();
-        assert_eq!(guild.id(), 1);
-        assert_eq!(guild.name(), "Greennill");
-    }
-
-    #[test]
-    fn test_v2_hunter() {
-        let guild = calculate("Hunter", GameVersion::V2, None).unwrap();
-        assert_eq!(guild.id(), 0);
-        assert_eq!(guild.name(), "Viridia");
+    fn test_tank() {
+        for version in [GameVersion::V1, GameVersion::V2] {
+            let guild = calculate("Tank", version, None).unwrap();
+            assert_eq!(guild.id(), 8);
+            assert_eq!(guild.name(), "Yellowboze");
+        }
     }
 
     #[test]
     fn test_empty_name() {
-        let result = calculate("", GameVersion::V1, None);
-        assert!(result.is_err());
-        assert_eq!(result.unwrap_err(), "Name cannot be empty");
+        for version in [GameVersion::V1, GameVersion::V2] {
+            let result = calculate("", version, None);
+            assert!(result.is_err());
+            assert_eq!(result.unwrap_err(), "Name cannot be empty");
+        }
     }
 
     #[test]
     fn test_too_long_name() {
-        let result = calculate("thisnameistoolong", GameVersion::V1, None);
-        assert!(result.is_err());
-        assert_eq!(
-            result.unwrap_err(),
-            "Name must be at most 12 characters long"
-        );
+        for version in [GameVersion::V1, GameVersion::V2] {
+            let result = calculate("thisnameistoolong", version, None);
+            assert!(result.is_err());
+            assert_eq!(
+                result.unwrap_err(),
+                "Name must be at most 12 characters long"
+            );
+        }
     }
 
     #[test]
-    fn test_v1_non_ascii() {
-        let result = calculate("café", GameVersion::V1, None);
-        assert!(result.is_err());
-        assert_eq!(
-            result.unwrap_err(),
-            "Name must contain only ASCII characters"
-        );
+    fn test_non_ascii() {
+        for version in [GameVersion::V1, GameVersion::V2] {
+            let result = calculate("café", version, None);
+            assert!(result.is_err());
+            assert_eq!(
+                result.unwrap_err(),
+                "Name must contain only ASCII characters"
+            );
+        }
     }
 
     #[test]
     fn test_guild_info() {
-        let guild = calculate("Testing", GameVersion::V1, None).unwrap();
-        assert_eq!(guild.id(), 4);
-        assert_eq!(guild.name(), "Purplenum");
-        assert_eq!(guild.common_drop(), ("Machineguns", 13));
-        assert_eq!(guild.rare_drop(), ("Daggers", 10));
-        assert_eq!(guild.mag_type(), "B");
+        for version in [GameVersion::V1, GameVersion::V2] {
+            let guild = calculate("Testing", version, None).unwrap();
+            assert_eq!(guild.id(), 4);
+            assert_eq!(guild.name(), "Purplenum");
+            assert_eq!(guild.common_drop(), ("Machineguns", 13));
+            assert_eq!(guild.rare_drop(), ("Daggers", 10));
+            assert_eq!(guild.mag_type(), "B");
+        }
     }
 
     #[test]
     fn test_drop_rates() {
-        let guild = calculate("Testing", GameVersion::V1, None).unwrap();
-        let rates = guild.drop_rates();
-        assert_eq!(rates.machineguns, 13);
-        assert_eq!(rates.daggers, 10);
+        for version in [GameVersion::V1, GameVersion::V2] {
+            let guild = calculate("Testing", version, None).unwrap();
+            let rates = guild.drop_rates();
+            assert_eq!(rates.machineguns, 13);
+            assert_eq!(rates.daggers, 10);
+        }
     }
 
     #[test]
     fn test_display() {
-        let guild = calculate("Testing", GameVersion::V1, None).unwrap();
-        let display_str = format!("{}", guild);
-        assert!(display_str.contains("Purplenum"));
-        assert!(display_str.contains("Machineguns"));
+        for version in [GameVersion::V1, GameVersion::V2] {
+            let guild = calculate("Testing", version, None).unwrap();
+            let display_str = format!("{}", guild);
+            assert!(display_str.contains("Purplenum"));
+            assert!(display_str.contains("Machineguns"));
+        }
     }
 
     #[test]
@@ -768,6 +785,43 @@ mod tests {
         let guild = calculate("Bob", GameVersion::BlueBurst, Some(CharacterClass::FOmar)).unwrap();
         assert_eq!(guild.id(), 0);
         assert_eq!(guild.name(), "Viridia");
+    }
+
+    // Additional BlueBurst Tests
+    #[test]
+    fn test_blueburst_corey_humar() {
+        let guild =
+            calculate("Corey", GameVersion::BlueBurst, Some(CharacterClass::HUmar)).unwrap();
+        assert_eq!(guild.id(), 9);
+        assert_eq!(guild.name(), "Whitill");
+    }
+
+    #[test]
+    fn test_blueburst_corey_hunewearl() {
+        let guild = calculate(
+            "Corey",
+            GameVersion::BlueBurst,
+            Some(CharacterClass::HUnewearl),
+        )
+        .unwrap();
+        assert_eq!(guild.id(), 0);
+        assert_eq!(guild.name(), "Viridia");
+    }
+
+    #[test]
+    fn test_blueburst_enemy_ramar() {
+        let guild =
+            calculate("Enemy", GameVersion::BlueBurst, Some(CharacterClass::RAmar)).unwrap();
+        assert_eq!(guild.id(), 8);
+        assert_eq!(guild.name(), "Yellowboze");
+    }
+
+    #[test]
+    fn test_blueburst_tank_hucast() {
+        let guild =
+            calculate("Tank", GameVersion::BlueBurst, Some(CharacterClass::HUcast)).unwrap();
+        assert_eq!(guild.id(), 5);
+        assert_eq!(guild.name(), "Pinkal");
     }
 
     #[test]
