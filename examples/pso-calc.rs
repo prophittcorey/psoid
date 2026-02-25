@@ -13,25 +13,16 @@ fn main() {
     let name = &args[1];
 
     match calculate(name) {
-        Ok(section_id) => {
+        Ok(guild) => {
             println!("Character Name: {}", name);
-            println!("Section ID   : {}", section_id.id());
-            println!("Guild        : {}", section_id.name());
-            println!("Good for     : {}", section_id.best_class());
-            println!(
-                "Common drops : {} ({}%)",
-                section_id.common_drop().0,
-                section_id.common_drop().1
-            );
-            println!(
-                "Rare drops   : {} ({}%)",
-                section_id.rare_drop().0,
-                section_id.rare_drop().1
-            );
-            println!("MAG type     : {}", section_id.mag_type());
+            println!();
+
+            // Display the full summary using the Display trait
+            println!("{}", guild);
+            println!();
 
             // Get drop rates directly
-            let rates = section_id.drop_rates();
+            let rates = guild.drop_rates();
             println!("\nDetailed Drop Rates:");
             println!("  Sabers      : {}%", rates.sabers);
             println!("  Swords      : {}%", rates.swords);

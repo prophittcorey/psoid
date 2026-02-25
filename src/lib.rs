@@ -4,6 +4,8 @@
 //! based on their name. The Section ID determines which guild the character
 //! belongs to, which affects drop rates and MAG types.
 
+use std::fmt;
+
 /// Represents a guild in Phantasy Star Online
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Guild {
@@ -261,12 +263,14 @@ impl Guild {
             },
         }
     }
+}
 
-    /// Get a human-readable summary of this guild
-    pub fn summary(&self) -> String {
+impl fmt::Display for Guild {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let (common_name, common_pct) = self.common_drop();
         let (rare_name, rare_pct) = self.rare_drop();
-        format!(
+        write!(
+            f,
             "Guild: {}, Class: {}, Common: {} ({}%), Rare: {} ({}%), MAG: {}",
             self.name(),
             self.best_class(),
@@ -294,26 +298,6 @@ pub struct DropRates {
     pub canes: u32,
     pub rods: u32,
     pub wands: u32,
-}
-
-#[allow(clippy::derivable_impls)]
-impl Default for DropRates {
-    fn default() -> Self {
-        DropRates {
-            sabers: 0,
-            swords: 0,
-            daggers: 0,
-            partisans: 0,
-            slicers: 0,
-            handguns: 0,
-            rifles: 0,
-            machineguns: 0,
-            shotguns: 0,
-            canes: 0,
-            rods: 0,
-            wands: 0,
-        }
-    }
 }
 
 /// Get the complete Guild information for a character name
@@ -440,12 +424,12 @@ mod tests {
     }
 
     #[test]
-    fn test_guild_summary() {
+    fn test_guild_display() {
         let guild = calculate("foobar").unwrap();
-        let summary = guild.summary();
-        assert!(summary.contains("Bluefull"));
-        assert!(summary.contains("Hunter"));
-        assert!(summary.contains("Partisans"));
+        let display_str = format!("{}", guild);
+        assert!(display_str.contains("Bluefull"));
+        assert!(display_str.contains("Hunter"));
+        assert!(display_str.contains("Partisans"));
     }
 
     #[test]
@@ -488,14 +472,6 @@ mod tests {
         assert_eq!(rates.partisans, 13);
         assert_eq!(rates.rods, 10);
         assert_eq!(rates.wands, 1);
-    }
-
-    #[test]
-    fn test_drop_rates_default() {
-        let default_rates = DropRates::default();
-        assert_eq!(default_rates.sabers, 0);
-        assert_eq!(default_rates.swords, 0);
-        assert_eq!(default_rates.wands, 0);
     }
 
     #[test]
