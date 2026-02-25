@@ -14,8 +14,8 @@
 //! assert_eq!(guild.name(), "Bluefull");
 //!
 //! // Blue Burst calculation with class
-//! let guild = calculate("PSO Lover", GameVersion::BlueBurst, Some(CharacterClass::RAmar)).unwrap();
-//! assert_eq!(guild.name(), "Skyly");
+//! let guild = calculate("PSO Player", GameVersion::BlueBurst, Some(CharacterClass::RAmar)).unwrap();
+//! assert_eq!(guild.name(), "Bluefull");
 //! ```
 
 use std::fmt;
@@ -480,8 +480,8 @@ fn get_blueburst_char_value(ch: char) -> Result<u32, String> {
 /// let guild = calculate("foobar", GameVersion::V1, None).unwrap();
 /// assert_eq!(guild.name(), "Bluefull");
 ///
-/// let guild = calculate("PSO Lover", GameVersion::BlueBurst, Some(CharacterClass::RAmar)).unwrap();
-/// assert_eq!(guild.name(), "Skyly");
+/// let guild = calculate("PSO Player", GameVersion::BlueBurst, Some(CharacterClass::RAmar)).unwrap();
+/// assert_eq!(guild.name(), "Bluefull");
 /// ```
 pub fn calculate(
     name: &str,
@@ -541,36 +541,88 @@ mod tests {
 
     // V1 Tests
     #[test]
-    fn test_v1_foobar() {
-        let guild = calculate("foobar", GameVersion::V1, None).unwrap();
-        assert_eq!(guild.id(), 3);
-        assert_eq!(guild.name(), "Bluefull");
-        assert_eq!(guild.best_class(), "Hunter");
+    fn test_v1_testing() {
+        let guild = calculate("Testing", GameVersion::V1, None).unwrap();
+        assert_eq!(guild.id(), 4);
+        assert_eq!(guild.name(), "Purplenum");
     }
 
     #[test]
-    fn test_v1_foo_bar() {
-        let guild = calculate("foo bar", GameVersion::V1, None).unwrap();
+    fn test_v1_test() {
+        let guild = calculate("Test", GameVersion::V1, None).unwrap();
+        assert_eq!(guild.id(), 6);
+        assert_eq!(guild.name(), "Redria");
+    }
+
+    #[test]
+    fn test_v1_bob() {
+        let guild = calculate("Bob", GameVersion::V1, None).unwrap();
         assert_eq!(guild.id(), 5);
         assert_eq!(guild.name(), "Pinkal");
-        assert_eq!(guild.best_class(), "Force");
+    }
+
+    #[test]
+    fn test_v1_big_guns() {
+        let guild = calculate("Big Guns", GameVersion::V1, None).unwrap();
+        assert_eq!(guild.id(), 9);
+        assert_eq!(guild.name(), "Whitill");
+    }
+
+    #[test]
+    fn test_v1_pso_fan() {
+        let guild = calculate("PSO Fan", GameVersion::V1, None).unwrap();
+        assert_eq!(guild.id(), 1);
+        assert_eq!(guild.name(), "Greennill");
+    }
+
+    #[test]
+    fn test_v1_hunter() {
+        let guild = calculate("Hunter", GameVersion::V1, None).unwrap();
+        assert_eq!(guild.id(), 0);
+        assert_eq!(guild.name(), "Viridia");
     }
 
     // V2 Tests
     #[test]
-    fn test_v2_foobar() {
-        let guild = calculate("foobar", GameVersion::V2, None).unwrap();
-        assert_eq!(guild.id(), 3);
-        assert_eq!(guild.name(), "Bluefull");
-        assert_eq!(guild.best_class(), "Hunter");
+    fn test_v2_testing() {
+        let guild = calculate("Testing", GameVersion::V2, None).unwrap();
+        assert_eq!(guild.id(), 4);
+        assert_eq!(guild.name(), "Purplenum");
     }
 
     #[test]
-    fn test_v2_foo_bar() {
-        let guild = calculate("foo bar", GameVersion::V2, None).unwrap();
+    fn test_v2_test() {
+        let guild = calculate("Test", GameVersion::V2, None).unwrap();
+        assert_eq!(guild.id(), 6);
+        assert_eq!(guild.name(), "Redria");
+    }
+
+    #[test]
+    fn test_v2_bob() {
+        let guild = calculate("Bob", GameVersion::V2, None).unwrap();
         assert_eq!(guild.id(), 5);
         assert_eq!(guild.name(), "Pinkal");
-        assert_eq!(guild.best_class(), "Force");
+    }
+
+    #[test]
+    fn test_v2_big_guns() {
+        let guild = calculate("Big Guns", GameVersion::V2, None).unwrap();
+        assert_eq!(guild.id(), 9);
+        assert_eq!(guild.name(), "Whitill");
+    }
+
+    #[test]
+    fn test_v2_pso_fan() {
+        let guild = calculate("PSO Fan", GameVersion::V2, None).unwrap();
+        assert_eq!(guild.id(), 1);
+        assert_eq!(guild.name(), "Greennill");
+    }
+
+    #[test]
+    fn test_v2_hunter() {
+        let guild = calculate("Hunter", GameVersion::V2, None).unwrap();
+        assert_eq!(guild.id(), 0);
+        assert_eq!(guild.name(), "Viridia");
     }
 
     #[test]
@@ -602,31 +654,28 @@ mod tests {
 
     #[test]
     fn test_guild_info() {
-        let guild = calculate("foobar", GameVersion::V1, None).unwrap();
-        assert_eq!(guild.id(), 3);
-        assert_eq!(guild.name(), "Bluefull");
-        assert_eq!(guild.best_class(), "Hunter");
-        assert_eq!(guild.common_drop(), ("Partisans", 13));
-        assert_eq!(guild.rare_drop(), ("Wands", 1));
+        let guild = calculate("Testing", GameVersion::V1, None).unwrap();
+        assert_eq!(guild.id(), 4);
+        assert_eq!(guild.name(), "Purplenum");
+        assert_eq!(guild.common_drop(), ("Machineguns", 13));
+        assert_eq!(guild.rare_drop(), ("Daggers", 10));
         assert_eq!(guild.mag_type(), "B");
     }
 
     #[test]
     fn test_drop_rates() {
-        let guild = calculate("foobar", GameVersion::V1, None).unwrap();
+        let guild = calculate("Testing", GameVersion::V1, None).unwrap();
         let rates = guild.drop_rates();
-        assert_eq!(rates.partisans, 13);
-        assert_eq!(rates.rods, 10);
-        assert_eq!(rates.wands, 1);
+        assert_eq!(rates.machineguns, 13);
+        assert_eq!(rates.daggers, 10);
     }
 
     #[test]
     fn test_display() {
-        let guild = calculate("foobar", GameVersion::V1, None).unwrap();
+        let guild = calculate("Testing", GameVersion::V1, None).unwrap();
         let display_str = format!("{}", guild);
-        assert!(display_str.contains("Bluefull"));
-        assert!(display_str.contains("Hunter"));
-        assert!(display_str.contains("Partisans"));
+        assert!(display_str.contains("Purplenum"));
+        assert!(display_str.contains("Machineguns"));
     }
 
     #[test]
@@ -655,43 +704,70 @@ mod tests {
 
     // BlueBurst Tests
     #[test]
-    fn test_blueburst_pso_lover_ramar() {
+    fn test_blueburst_pso_player_fonewearl() {
         let guild = calculate(
-            "PSO Lover",
-            GameVersion::BlueBurst,
-            Some(CharacterClass::RAmar),
-        )
-        .unwrap();
-        assert_eq!(guild.id(), 2);
-        assert_eq!(guild.name(), "Skyly");
-    }
-
-    #[test]
-    fn test_blueburst_pso_lover_fonewearl() {
-        let guild = calculate(
-            "PSO Lover",
+            "PSO Player",
             GameVersion::BlueBurst,
             Some(CharacterClass::FOnewearl),
         )
         .unwrap();
-        assert_eq!(guild.id(), 7);
-        assert_eq!(guild.name(), "Oran");
+        assert_eq!(guild.id(), 8);
+        assert_eq!(guild.name(), "Yellowboze");
     }
 
     #[test]
-    fn test_blueburst_no_class() {
-        let guild = calculate("PSO Lover", GameVersion::BlueBurst, None).unwrap();
-        assert_eq!(guild.id(), 4);
-        assert_eq!(guild.name(), "Purplenum");
+    fn test_blueburst_pso_player_ramar() {
+        let guild = calculate(
+            "PSO Player",
+            GameVersion::BlueBurst,
+            Some(CharacterClass::RAmar),
+        )
+        .unwrap();
+        assert_eq!(guild.id(), 3);
+        assert_eq!(guild.name(), "Bluefull");
     }
 
     #[test]
-    fn test_blueburst_different_classes() {
-        let name = "Test";
-        let humar = calculate(name, GameVersion::BlueBurst, Some(CharacterClass::HUmar)).unwrap();
-        let ramar = calculate(name, GameVersion::BlueBurst, Some(CharacterClass::RAmar)).unwrap();
+    fn test_blueburst_hunter_ramarl() {
+        let guild = calculate(
+            "Hunter",
+            GameVersion::BlueBurst,
+            Some(CharacterClass::RAmarl),
+        )
+        .unwrap();
+        assert_eq!(guild.id(), 6);
+        assert_eq!(guild.name(), "Redria");
+    }
 
-        assert_ne!(humar.id(), ramar.id());
+    #[test]
+    fn test_blueburst_hunter_humar() {
+        let guild = calculate(
+            "Hunter",
+            GameVersion::BlueBurst,
+            Some(CharacterClass::HUmar),
+        )
+        .unwrap();
+        assert_eq!(guild.id(), 5);
+        assert_eq!(guild.name(), "Pinkal");
+    }
+
+    #[test]
+    fn test_blueburst_bob_hucaseal() {
+        let guild = calculate(
+            "Bob",
+            GameVersion::BlueBurst,
+            Some(CharacterClass::HUcaseal),
+        )
+        .unwrap();
+        assert_eq!(guild.id(), 9);
+        assert_eq!(guild.name(), "Whitill");
+    }
+
+    #[test]
+    fn test_blueburst_bob_fomar() {
+        let guild = calculate("Bob", GameVersion::BlueBurst, Some(CharacterClass::FOmar)).unwrap();
+        assert_eq!(guild.id(), 0);
+        assert_eq!(guild.name(), "Viridia");
     }
 
     #[test]

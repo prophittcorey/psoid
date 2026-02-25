@@ -27,12 +27,12 @@ use psoid::{calculate, GameVersion, CharacterClass};
 
 fn main() {
     let guild = calculate(
-        "PSO Lover",
+        "PSO Player",
         GameVersion::BlueBurst,
         Some(CharacterClass::RAmar),
     ).unwrap();
     
-    println!("Guild: {}", guild.name());    // "Skyly"
+    println!("Guild: {}", guild.name());    // "Bluefull"
     println!("ID: {}", guild.id());         // 2
 }
 ```
@@ -49,7 +49,7 @@ cargo run --example pso-calc -- "foobar" v1
 cargo run --example pso-calc -- "foobar" v2
 
 # Blue Burst with class
-cargo run --example pso-calc -- "PSO Lover" blueburst RAmar
+cargo run --example pso-calc -- "PSO Player" blueburst RAmar
 ```
 
 ### Drop Rate Tables
