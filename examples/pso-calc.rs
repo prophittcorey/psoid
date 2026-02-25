@@ -22,7 +22,7 @@ fn main() {
     }
 
     let name = &args[1];
-    let version_str = args.get(2).map(|s| s.as_str()).unwrap_or("v1v2");
+    let version_str = args.get(2).map(|s| s.as_str()).unwrap_or("v1");
     let class_str = args.get(3).map(|s| s.as_str());
 
     let version = match version_str.to_lowercase().as_str() {
