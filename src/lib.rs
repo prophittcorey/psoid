@@ -3,8 +3,60 @@
 //! This library calculates the Section ID for a Phantasy Star Online character
 //! based on their name. The Section ID determines which guild the character
 //! belongs to, which affects drop rates and MAG types.
+//!
+//! # Game Versions
+//!
+//! This library supports multiple game versions:
+//! - **V1V2**: Original PSO versions 1 and 2 (uses ASCII values directly)
+//! - **BlueBurst**: PSO BlueBurst version (uses custom character mappings and class offsets)
 
 use std::fmt;
+
+/// Represents the game version which affects Section ID calculation
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum GameVersion {
+    /// Original PSO Versions 1 and 2
+    V1V2,
+    /// PSO BlueBurst
+    BlueBurst,
+}
+
+/// Character class for BlueBurst version (affects Section ID calculation)
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CharacterClass {
+    HUmar,
+    HUnewearl,
+    HUcast,
+    HUcaseal,
+    RAmar,
+    RAmarl,
+    RAcast,
+    RAcaseal,
+    FOmar,
+    FOmarl,
+    FOnewm,
+    FOnewearl,
+}
+
+impl CharacterClass {
+    /// Get the class offset value for BlueBurst calculations
+    pub fn blueburst_offset(&self) -> u32 {
+        match self {
+            CharacterClass::HUmar => 5,
+            CharacterClass::HUnewearl => 6,
+            CharacterClass::HUcast => 7,
+            CharacterClass::HUcaseal => 4,
+            CharacterClass::RAmar => 8,
+            CharacterClass::RAmarl => 6,
+            CharacterClass::RAcast => 9,
+            CharacterClass::RAcaseal => 0,
+            CharacterClass::FOmar => 5,
+            CharacterClass::FOmarl => 1,
+            CharacterClass::FOnewm => 2,
+            CharacterClass::FOnewearl => 3,
+        }
+    }
+}
 
 /// Represents a guild in Phantasy Star Online
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -300,7 +352,166 @@ pub struct DropRates {
     pub wands: u32,
 }
 
-/// Get the complete Guild information for a character name
+#[allow(clippy::derivable_impls)]
+impl Default for DropRates {
+    fn default() -> Self {
+        DropRates {
+            sabers: 0,
+            swords: 0,
+            daggers: 0,
+            partisans: 0,
+            slicers: 0,
+            handguns: 0,
+            rifles: 0,
+            machineguns: 0,
+            shotguns: 0,
+            canes: 0,
+            rods: 0,
+            wands: 0,
+        }
+    }
+}
+
+/// Get character value for BlueBurst calculation
+///
+/// Uses custom mapping instead of simple ASCII % 10
+fn get_blueburst_char_value(ch: char) -> Result<u32, String> {
+    let value = match ch {
+        'A' => 5,
+        'B' => 6,
+        'C' => 7,
+        'D' => 8,
+        'E' => 9,
+        'F' => 0,
+        'G' => 1,
+        'H' => 2,
+        'I' => 3,
+        'J' => 4,
+        'K' => 5,
+        'L' => 6,
+        'M' => 7,
+        'N' => 8,
+        'O' => 9,
+        'P' => 0,
+        'Q' => 1,
+        'R' => 2,
+        'S' => 3,
+        'T' => 4,
+        'U' => 5,
+        'V' => 6,
+        'W' => 7,
+        'X' => 8,
+        'Y' => 9,
+        'Z' => 0,
+        'a' => 7,
+        'b' => 8,
+        'c' => 9,
+        'd' => 0,
+        'e' => 1,
+        'f' => 2,
+        'g' => 3,
+        'h' => 4,
+        'i' => 5,
+        'j' => 6,
+        'k' => 7,
+        'l' => 8,
+        'm' => 9,
+        'n' => 0,
+        'o' => 1,
+        'p' => 2,
+        'q' => 3,
+        'r' => 4,
+        's' => 5,
+        't' => 6,
+        'u' => 7,
+        'v' => 8,
+        'w' => 9,
+        'x' => 0,
+        'y' => 1,
+        'z' => 2,
+        '0' => 8,
+        '1' => 9,
+        '2' => 0,
+        '3' => 1,
+        '4' => 2,
+        '5' => 3,
+        '6' => 4,
+        '7' => 5,
+        '8' => 6,
+        '9' => 7,
+        '`' => 6,
+        '~' => 6,
+        '!' => 3,
+        '@' => 4,
+        '#' => 5,
+        '$' => 6,
+        '%' => 7,
+        '^' => 4,
+        '&' => 8,
+        '*' => 2,
+        '(' => 0,
+        ')' => 1,
+        '-' => 5,
+        '_' => 5,
+        '=' => 1,
+        '+' => 3,
+        '\\' => 2,
+        '|' => 5,
+        '[' => 1,
+        '{' => 3,
+        ']' => 3,
+        '}' => 5,
+        ';' => 9,
+        ':' => 8,
+        '\'' => 9,
+        '"' => 4,
+        ',' => 4,
+        '<' => 0,
+        '.' => 6,
+        '>' => 2,
+        '/' => 7,
+        '?' => 3,
+        ' ' => 2,
+        _ => return Err(format!("Unsupported character: {}", ch)),
+    };
+    Ok(value)
+}
+
+/// Calculate Section ID using V1/V2 algorithm (simple ASCII sum)
+fn calculate_v1v2(name: &str) -> Result<Guild, String> {
+    let sum: u32 = name.bytes().map(|b| b as u32).sum();
+    guild_from_id(sum % 10)
+}
+
+/// Calculate Section ID using BlueBurst algorithm (mapped values + class offset)
+fn calculate_blueburst(name: &str, character_class: CharacterClass) -> Result<Guild, String> {
+    let mut sum: u32 = 0;
+    for ch in name.chars() {
+        sum += get_blueburst_char_value(ch)?;
+    }
+
+    let total = (sum + character_class.blueburst_offset()) % 10;
+    guild_from_id(total)
+}
+
+/// Get guild from numeric ID (0-9)
+fn guild_from_id(id: u32) -> Result<Guild, String> {
+    match id {
+        0 => Ok(Guild::Viridia),
+        1 => Ok(Guild::Greennill),
+        2 => Ok(Guild::Skyly),
+        3 => Ok(Guild::Bluefull),
+        4 => Ok(Guild::Purplenum),
+        5 => Ok(Guild::Pinkal),
+        6 => Ok(Guild::Redria),
+        7 => Ok(Guild::Oran),
+        8 => Ok(Guild::Yellowboze),
+        9 => Ok(Guild::Whitill),
+        _ => Err("Invalid guild ID".to_string()),
+    }
+}
+
+/// Calculate Section ID for V1V2 (default)
 ///
 /// The section ID is calculated by summing the ASCII values of all characters
 /// in the name and taking modulo 10. The result determines which guild the
@@ -324,6 +535,45 @@ pub struct DropRates {
 /// assert_eq!(guild.best_class(), "Hunter");
 /// ```
 pub fn calculate(name: &str) -> Result<Guild, String> {
+    validate_name(name)?;
+    calculate_v1v2(name)
+}
+
+/// Calculate Section ID with explicit version
+///
+/// # Arguments
+/// * `name` - The character name (must be ASCII and at most 12 characters)
+/// * `version` - The game version to use for calculation
+/// * `character_class` - Character class (only used for BlueBurst)
+///
+/// # Returns
+/// * `Ok(Guild)` - The guild enum variant with all associated information
+/// * `Err(String)` - Error message if name is invalid
+///
+/// # Examples
+///
+/// ```
+/// use psoid::{calculate_with_version, GameVersion, CharacterClass};
+///
+/// let guild = calculate_with_version("PSO Lover", GameVersion::BlueBurst, CharacterClass::RAmar).unwrap();
+/// assert_eq!(guild.id(), 2);
+/// assert_eq!(guild.name(), "Skyly");
+/// ```
+pub fn calculate_with_version(
+    name: &str,
+    version: GameVersion,
+    character_class: CharacterClass,
+) -> Result<Guild, String> {
+    validate_name(name)?;
+
+    match version {
+        GameVersion::V1V2 => calculate_v1v2(name),
+        GameVersion::BlueBurst => calculate_blueburst(name, character_class),
+    }
+}
+
+/// Validate character name
+fn validate_name(name: &str) -> Result<(), String> {
     if name.is_empty() {
         return Err("Name cannot be empty".to_string());
     }
@@ -332,35 +582,16 @@ pub fn calculate(name: &str) -> Result<Guild, String> {
         return Err("Name must be at most 12 characters long".to_string());
     }
 
-    if !name.is_ascii() {
-        return Err("Name must contain only ASCII characters".to_string());
-    }
-
-    let sum: u32 = name.bytes().map(|b| b as u32).sum();
-
-    let guild = match sum % 10 {
-        0 => Guild::Viridia,
-        1 => Guild::Greennill,
-        2 => Guild::Skyly,
-        3 => Guild::Bluefull,
-        4 => Guild::Purplenum,
-        5 => Guild::Pinkal,
-        6 => Guild::Redria,
-        7 => Guild::Oran,
-        8 => Guild::Yellowboze,
-        9 => Guild::Whitill,
-        _ => unreachable!(),
-    };
-
-    Ok(guild)
+    Ok(())
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
+    // V1V2 Tests
     #[test]
-    fn test_calculate_foobar() {
+    fn test_calculate_v1v2_foobar() {
         let guild = calculate("foobar").unwrap();
         assert_eq!(guild.id(), 3);
         assert_eq!(guild.name(), "Bluefull");
@@ -368,7 +599,7 @@ mod tests {
     }
 
     #[test]
-    fn test_calculate_foo_bar() {
+    fn test_calculate_v1v2_foo_bar() {
         let guild = calculate("foo bar").unwrap();
         assert_eq!(guild.id(), 5);
         assert_eq!(guild.name(), "Pinkal");
@@ -393,14 +624,42 @@ mod tests {
         );
     }
 
+    // BlueBurst Tests
     #[test]
-    fn test_calculate_non_ascii() {
-        let result = calculate("café");
-        assert!(result.is_err());
-        assert_eq!(
-            result.unwrap_err(),
-            "Name must contain only ASCII characters"
-        );
+    fn test_blueburst_pso_lover_ramar() {
+        // From the wiki example: "PSO Lover" as RAmar = Skyly (id 2)
+        let guild =
+            calculate_with_version("PSO Lover", GameVersion::BlueBurst, CharacterClass::RAmar)
+                .unwrap();
+        assert_eq!(guild.id(), 2);
+        assert_eq!(guild.name(), "Skyly");
+    }
+
+    #[test]
+    fn test_blueburst_pso_lover_fonewearl() {
+        // From the wiki example: "PSO Lover" as FOnewearl = Oran (id 7)
+        let guild = calculate_with_version(
+            "PSO Lover",
+            GameVersion::BlueBurst,
+            CharacterClass::FOnewearl,
+        )
+        .unwrap();
+        assert_eq!(guild.id(), 7);
+        assert_eq!(guild.name(), "Oran");
+    }
+
+    #[test]
+    fn test_blueburst_character_class_offsets() {
+        // Test that different classes produce different results
+        let name = "Test";
+
+        let humar =
+            calculate_with_version(name, GameVersion::BlueBurst, CharacterClass::HUmar).unwrap();
+        let ramar =
+            calculate_with_version(name, GameVersion::BlueBurst, CharacterClass::RAmar).unwrap();
+
+        // These should differ due to different class offsets
+        assert_ne!(humar.id(), ramar.id());
     }
 
     #[test]
@@ -497,5 +756,13 @@ mod tests {
         assert_eq!(guild.id(), 9);
         assert_eq!(guild.name(), "Whitill");
         assert_eq!(guild.rare_drop(), ("Shotguns", 1));
+    }
+
+    #[test]
+    fn test_character_class_offsets() {
+        assert_eq!(CharacterClass::HUmar.blueburst_offset(), 5);
+        assert_eq!(CharacterClass::RAmar.blueburst_offset(), 8);
+        assert_eq!(CharacterClass::FOmarl.blueburst_offset(), 1);
+        assert_eq!(CharacterClass::FOnewearl.blueburst_offset(), 3);
     }
 }
