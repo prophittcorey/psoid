@@ -1,6 +1,14 @@
 [package]
 name = "psoid"
 version = "0.1.0"
-edition = "2024"
+edition = "2021"
+authors = ["Corey Prophitt <corey@prophitt.me>"]
+description = "Easily calculate Phantasy Star Online section IDs and related information."
+license = "MIT"
+repository = "https://github.com/prophittcorey/psoid"
+homepage = "https://github.com/prophittcorey/psoid"
+readme = "README.md"
+keywords = ["phantasy", "star", "online", "pso", "section-id"]
+categories = ["games"]
 
 [dependencies]
