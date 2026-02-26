@@ -1,4 +1,4 @@
-use psoid::{CharacterClass, GameVersion, calculate};
+use psoid::{calculate, CharacterClass, GameVersion};
 use std::env;
 
 fn main() {
